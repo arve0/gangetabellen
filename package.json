@@ -1,0 +1,30 @@
+{
+  "name": "gangetabellen",
+  "version": "0.0.1",
+  "description": "Lær gangetabellen med et spill",
+  "main": "src/index.js",
+  "scripts": {
+    "lint": "semistandard",
+    "test": "ava **/*.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arve0/gangetabellen.git"
+  },
+  "keywords": [
+    "gangetabellen",
+    "spill",
+    "matematikk",
+    "matte"
+  ],
+  "author": "Arve Seljebu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/arve0/gangetabellen/issues"
+  },
+  "homepage": "https://github.com/arve0/gangetabellen#readme",
+  "devDependencies": {
+    "ava": "^0.14.0",
+    "semistandard": "^7.0.5"
+  }
+}
