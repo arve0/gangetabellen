@@ -2,10 +2,13 @@
   "name": "gangetabellen",
   "version": "0.0.1",
   "description": "Lær gangetabellen med et spill",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "lint": "semistandard",
-    "test": "ava **/*.test.js"
+    "prepublish": "npm run lint && npm run build && npm run test",
+    "build": "babel src -d dist",
+    "lint": "standard \"src/**/*.js\"",
+    "test": "ava --watch dist/*.test.js",
+    "start": "npm test & npm run build -- --watch",
   },
   "repository": {
     "type": "git",
@@ -25,6 +28,11 @@
   "homepage": "https://github.com/arve0/gangetabellen#readme",
   "devDependencies": {
     "ava": "^0.14.0",
-    "semistandard": "^7.0.5"
+    "babel-cli": "^6.7.7",
+    "shuffle-array": "^1.0.0",
+    "standard": "^6.0.8"
+  },
+  "dependencies": {
+    "redux": "^3.5.2"
   }
 }
