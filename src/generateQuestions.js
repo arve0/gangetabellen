@@ -1,0 +1,20 @@
+/**
+ * Generate an array of questions.
+ *
+ * [{x: 1, y: 2, text: '1 x 2'}, ...]
+ */
+
+export default function generateQuestions () {
+  let arr = []
+  for (let x = 0; x <= 10; ++x) {
+    for (let y = 0; y <= 10; ++y) {
+      arr.push({
+        x,
+        y,
+        text: `${x} x ${y}`,
+        answer: x * y
+      })
+    }
+  }
+  return arr
+}

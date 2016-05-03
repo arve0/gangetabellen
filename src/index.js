@@ -1,12 +1,16 @@
 import { createStore } from 'redux'
-import initialState from './initialState.js'
+import generateQuestions from './generateQuestions.js'
+import readline from 'readline'
 
-const numbers = initialState()
+const initialState = {
+  questions: generateQuestions(),
+  currentQuestion: null
+}
 
-function reducer (state = numbers, action) {
+function reducer (state = initialState, action) {
   switch (action.type) {
-    case 'NUMBERS':
-      return state
+    case 'PICK_QUESTION':
+      return {...state, currentQuestion: action.question}
     default:
       return state
   }
@@ -14,9 +18,33 @@ function reducer (state = numbers, action) {
 
 const store = createStore(reducer)
 
-store.subscribe(() => {
-  console.log(store.getState())
+function pickNextQuestion () {
+  const { questions } = store.getState()
+  store.dispatch({
+    type: 'PICK_QUESTION',
+    question: Math.floor(questions.length * Math.random())
+  })
+}
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
 })
 
-// do not exit
-setInterval(() => {}, 1000)
+function askQuestion () {
+  pickNextQuestion()
+  const state = store.getState()
+  const question = state.questions[state.currentQuestion]
+  rl.question('What is ' + question.text + '? ', (answer) => {
+    answer = parseInt(answer, 10)
+    if (answer === question.answer) {
+      console.log('Correct!')
+    } else {
+      console.log('Wrong :-(')
+      console.log('Correct is ' + question.answer)
+    }
+    askQuestion()
+  })
+}
+
+askQuestion()

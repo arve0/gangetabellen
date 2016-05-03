@@ -8,7 +8,7 @@
     "build": "babel src -d dist",
     "lint": "standard \"src/**/*.js\"",
     "test": "ava --watch dist/*.test.js",
-    "start": "npm test & npm run build -- --watch",
+    "start": "npm test & npm run build -- --watch"
   },
   "repository": {
     "type": "git",
@@ -29,7 +29,7 @@
   "devDependencies": {
     "ava": "^0.14.0",
     "babel-cli": "^6.7.7",
-    "shuffle-array": "^1.0.0",
+    "babel-plugin-transform-object-rest-spread": "^6.6.5",
     "standard": "^6.0.8"
   },
   "dependencies": {

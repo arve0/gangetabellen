@@ -10,14 +10,6 @@ For å starte automatisk bygg og test:
 npm start
 ```
 
-Bygg og test vil kjøres hver gang en fil lagres.
-
-For å bygge:
-
-```
-npm run build
-```
-
-For flere detaljer, se [package.json].
+For flere detaljer, se [package.json](package.json).
 
 ["spaced repetition"]: https://en.wikipedia.org/wiki/Spaced_repetition
