@@ -16,7 +16,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var initialState = {
   questions: (0, _generateQuestions2.default)(),
-  currentQuestion: null
+  currentQuestion: null,
+  question: {},
+  input: ''
 };
 
 function reducer() {
@@ -25,7 +27,20 @@ function reducer() {
 
   switch (action.type) {
     case 'PICK_QUESTION':
-      return _extends({}, state, { currentQuestion: action.question });
+      return _extends({}, state, {
+        currentQuestion: action.question,
+        question: state.questions[action.question] });
+    case 'INPUT':
+      var numbers = '0 1 2 3 4 5 6 7 8 9'.split(' ');
+      var input = state.input;
+      if (action.key.name === 'backspace') {
+        input = input.slice(0, input.length - 1);
+      } else if (numbers.indexOf(action.input) !== -1) {
+        input += action.input;
+      }
+      return _extends({}, state, { input: input });
+    case 'RESET_INPUT':
+      return _extends({}, state, { input: '' });
     default:
       return state;
   }
@@ -33,36 +48,60 @@ function reducer() {
 
 var store = (0, _redux.createStore)(reducer);
 
-function pickNextQuestion() {
-  var _store$getState = store.getState();
-
-  var questions = _store$getState.questions;
-
-  store.dispatch({
-    type: 'PICK_QUESTION',
-    question: Math.floor(questions.length * Math.random())
-  });
-}
+store.subscribe(function () {
+  var state = store.getState();
+  var question = state.questions[state.currentQuestion];
+  if (question && question.answer === state.input) {
+    console.log(' ✓');
+    pickNextQuestion();
+    // TODO: keep score
+    return;
+  }
+  render(state);
+});
 
 var rl = _readline2.default.createInterface({
   input: process.stdin,
   output: process.stdout
 });
+rl.on('close', function () {
+  console.log('bye!');
+  // TODO: show score result
+});
 
-function askQuestion() {
-  pickNextQuestion();
-  var state = store.getState();
-  var question = state.questions[state.currentQuestion];
-  rl.question('What is ' + question.text + '? ', function (answer) {
-    answer = parseInt(answer, 10);
-    if (answer === question.answer) {
-      console.log('Correct!');
-    } else {
-      console.log('Wrong :-(');
-      console.log('Correct is ' + question.answer);
-    }
-    askQuestion();
+function pickNextQuestion() {
+  var _store$getState = store.getState();
+
+  var questions = _store$getState.questions;
+
+  var randomQuestion = Math.floor(questions.length * Math.random());
+  store.dispatch({ type: 'RESET_INPUT' });
+  store.dispatch({
+    type: 'PICK_QUESTION',
+    question: randomQuestion
   });
 }
 
-askQuestion();
+pickNextQuestion();
+
+_readline2.default.emitKeypressEvents(process.stdin);
+process.stdin.on('keypress', registerInput);
+
+function registerInput(input, key) {
+  store.dispatch({
+    type: 'INPUT',
+    input: input,
+    key: key
+  });
+}
+
+function render(_ref) {
+  var input = _ref.input;
+  var question = _ref.question;
+
+  if (question) {
+    _readline2.default.clearLine(process.stdout, 0);
+    _readline2.default.cursorTo(process.stdout, 0);
+    process.stdout.write(question.text + input);
+  }
+}
