@@ -7,7 +7,7 @@ exports.default = generateQuestions;
 /**
  * Generate an array of questions.
  *
- * [{x: 1, y: 2, text: '1 x 2', answer: '2'}, ...]
+ * [{x: 1, y: 2, text: '1 x 2', answer: '2', correctAnswers: 0}, ...]
  */
 
 function generateQuestions() {
@@ -18,7 +18,8 @@ function generateQuestions() {
         x: x,
         y: y,
         text: x + ' x ' + y + ' = ',
-        answer: '' + x * y // as string
+        answer: '' + x * y, // as string
+        correctAnswers: 0
       });
     }
   }
