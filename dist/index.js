@@ -49,8 +49,8 @@ function render(_ref) {
 
 	_readline2.default.clearLine(process.stdout, 0);
 	_readline2.default.cursorTo(process.stdout, 0);
-	var correct = input === question.answer;
-	var output = question.text + input + (correct ? ' ✓\n' : '');
+	var correct = input === question.answer ? ' ✓\n' : '';
+	var output = question.text + input + correct;
 	process.stdout.write(output);
 }
 
@@ -66,5 +66,5 @@ function pickNextQuestion() {
 	});
 }
 
-// start next game
+// start game
 pickNextQuestion();

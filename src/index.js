@@ -31,8 +31,8 @@ function registerInput (store) {
 function render ({ input, question }) {
 	readline.clearLine(process.stdout, 0)
 	readline.cursorTo(process.stdout, 0)
-	const correct = input === question.answer
-	const output = question.text + input + (correct ? ' ✓\n' : '')
+	const correct = (input === question.answer) ? ' ✓\n' : ''
+	const output = question.text + input + correct
 	process.stdout.write(output)
 }
 
@@ -45,5 +45,5 @@ function pickNextQuestion () {
 	})
 }
 
-// start next game
+// start game
 pickNextQuestion()
