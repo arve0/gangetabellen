@@ -30,42 +30,63 @@ rl.on('close', function () {
 
 function registerInput(store) {
 	return function (str, key) {
-		store.dispatch({ type: 'INPUT', input: str, key: key });
-
 		var _store$getState = store.getState();
 
-		var input = _store$getState.input;
-		var question = _store$getState.question;
+		var mode = _store$getState.mode;
 
-		if (input === question.answer) {
+		if (mode === 'info') {
 			pickNextQuestion();
+		} else {
+			store.dispatch({ type: 'INPUT', input: str, key: key });
+
+			var _store$getState2 = store.getState();
+
+			var input = _store$getState2.input;
+			var question = _store$getState2.question;
+
+			if (input === question.answer) {
+				pickNextQuestion();
+			}
 		}
 	};
 }
 
-function render(_ref) {
-	var input = _ref.input;
-	var question = _ref.question;
-
-	_readline2.default.clearLine(process.stdout, 0);
-	_readline2.default.cursorTo(process.stdout, 0);
-	var correct = input === question.answer ? ' ✓\n' : '';
-	var output = question.text + input + correct;
-	process.stdout.write(output);
-}
-
 function pickNextQuestion() {
-	var _store$getState2 = store.getState();
+	var _store$getState3 = store.getState();
 
-	var bins = _store$getState2.bins;
+	var bins = _store$getState3.bins;
 
 	var randomQuestion = Math.floor(bins[0].length * Math.random());
 	store.dispatch({
-		type: 'PICK_QUESTION',
+		type: 'QUESTION',
 		question: bins[0][randomQuestion]
 	});
 }
 
 // start game
-pickNextQuestion();
+store.dispatch({
+	type: 'INFO',
+	info: {
+		text: 'Velkommen. Før vi starter, skal vi ta en test for å se hvor rask du er. Trykk på en knapp for å fortsette.'
+	}
+});
+
+function render(_ref) {
+	var mode = _ref.mode;
+	var input = _ref.input;
+	var question = _ref.question;
+	var info = _ref.info;
+
+	_readline2.default.clearLine(process.stdout, 0);
+	_readline2.default.cursorTo(process.stdout, 0);
+	// console.log(store.getState())
+	var output = void 0;
+	if (mode === 'question') {
+		var correct = input === question.answer ? ' ✓\n' : '';
+		output = question.text + input + correct;
+	} else {
+		output = info.text;
+	}
+	process.stdout.write(output);
+}
 //# sourceMappingURL=index.js.map

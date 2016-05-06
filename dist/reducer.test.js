@@ -10,12 +10,12 @@ var _ava2 = _interopRequireDefault(_ava);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-(0, _ava2.default)('PICK_QUESTION', function (t) {
+(0, _ava2.default)('QUESTION', function (t) {
 	var state = (0, _reducer2.default)();
 	t.true(state.bins[0].length === 100);
 
 	state = (0, _reducer2.default)(state, {
-		type: 'PICK_QUESTION',
+		type: 'QUESTION',
 		question: state.bins[0][0]
 	});
 
@@ -58,7 +58,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 	// move all to next bin
 	questions.map(function (question) {
 		state = (0, _reducer2.default)(state, {
-			type: 'PICK_QUESTION',
+			type: 'QUESTION',
 			question: question
 		});
 		question.answer.split('').map(function (input) {
@@ -71,7 +71,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 	// move one to next bin
 	state = (0, _reducer2.default)(state, {
-		type: 'PICK_QUESTION',
+		type: 'QUESTION',
 		question: state.bins[1][10]
 	});
 	state.question.answer.split('').map(function (input) {

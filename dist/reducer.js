@@ -20,6 +20,10 @@ var initialState = {
 	// five bins with questions
 	bins: [(0, _generateQuestions2.default)(), [], [], [], []],
 	question: {},
+	info: {
+		text: '',
+		action: 'keypress'
+	},
 	input: ''
 };
 
@@ -28,12 +32,19 @@ function reducer() {
 	var action = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
 	switch (action.type) {
-		case 'PICK_QUESTION':
+		case 'QUESTION':
 			var bins = removeItemFromBins(state.bins, action.question);
 			return _extends({}, state, {
+				mode: 'question',
 				question: action.question,
 				input: '',
 				bins: bins });
+
+		case 'INFO':
+			return _extends({}, state, {
+				mode: 'info',
+				info: action.info });
+
 		case 'INPUT':
 			var numbers = '0 1 2 3 4 5 6 7 8 9'.split(' ');
 			var input = state.input;
@@ -43,10 +54,17 @@ function reducer() {
 				input = state.input + action.input;
 				// if correct, inc counter and add back to bin
 				if (input === state.question.answer) {
-					var correctAnswers = state.question.correctAnswers + 1;
-					state.question = _extends({}, state.question, { correctAnswers: correctAnswers });
-					// add back to one of the bins
-					state.bins = [].concat(_toConsumableArray(state.bins.slice(0, correctAnswers)), [[].concat(_toConsumableArray(state.bins[correctAnswers]), [state.question])], _toConsumableArray(state.bins.slice(correctAnswers + 1)));
+					(function () {
+						var correctAnswers = state.question.correctAnswers + 1;
+						state.question = _extends({}, state.question, { correctAnswers: correctAnswers });
+						// add back to one of the bins
+						state.bins = state.bins.map(function (bin, i) {
+							if (i === correctAnswers) {
+								return [].concat(_toConsumableArray(bin), [state.question]);
+							}
+							return bin;
+						});
+					})();
 				}
 			}
 			return _extends({}, state, { input: input });

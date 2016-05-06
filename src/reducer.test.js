@@ -1,12 +1,12 @@
 import reducer from './reducer.js'
 import test from 'ava'
 
-test('PICK_QUESTION', (t) => {
+test('QUESTION', (t) => {
 	let state = reducer()
 	t.true(state.bins[0].length === 100)
 
 	state = reducer(state, {
-		type: 'PICK_QUESTION',
+		type: 'QUESTION',
 		question: state.bins[0][0]
 	})
 
@@ -49,7 +49,7 @@ test('Answers correct to all questions', (t) => {
 	// move all to next bin
 	questions.map(question => {
 		state = reducer(state, {
-			type: 'PICK_QUESTION',
+			type: 'QUESTION',
 			question
 		})
 		question.answer.split('').map(input => {
@@ -62,7 +62,7 @@ test('Answers correct to all questions', (t) => {
 
 	// move one to next bin
 	state = reducer(state, {
-		type: 'PICK_QUESTION',
+		type: 'QUESTION',
 		question: state.bins[1][10]
 	})
 	state.question.answer.split('').map(input => {

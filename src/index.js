@@ -20,30 +20,46 @@ rl.on('close', () => {
 
 function registerInput (store) {
 	return (str, key) => {
-		store.dispatch({ type: 'INPUT', input: str, key })
-		const { input, question } = store.getState()
-		if (input === question.answer) {
+		const { mode } = store.getState()
+		if (mode === 'info') {
 			pickNextQuestion()
+		} else {
+			store.dispatch({ type: 'INPUT', input: str, key })
+			const { input, question } = store.getState()
+			if (input === question.answer) {
+				pickNextQuestion()
+			}
 		}
 	}
-}
-
-function render ({ input, question }) {
-	readline.clearLine(process.stdout, 0)
-	readline.cursorTo(process.stdout, 0)
-	const correct = (input === question.answer) ? ' ✓\n' : ''
-	const output = question.text + input + correct
-	process.stdout.write(output)
 }
 
 function pickNextQuestion () {
 	const { bins } = store.getState()
 	const randomQuestion = Math.floor(bins[0].length * Math.random())
 	store.dispatch({
-		type: 'PICK_QUESTION',
+		type: 'QUESTION',
 		question: bins[0][randomQuestion]
 	})
 }
 
 // start game
-pickNextQuestion()
+store.dispatch({
+	type: 'INFO',
+	info: {
+		text: 'Velkommen. Før vi starter, skal vi ta en test for å se hvor rask du er. Trykk på en knapp for å fortsette.'
+	}
+})
+
+function render ({ mode, input, question, info }) {
+	readline.clearLine(process.stdout, 0)
+	readline.cursorTo(process.stdout, 0)
+	// console.log(store.getState())
+	let output
+	if (mode === 'question') {
+		const correct = (input === question.answer) ? ' ✓\n' : ''
+		output = question.text + input + correct
+	} else {
+		output = info.text
+	}
+	process.stdout.write(output)
+}
