@@ -68,3 +68,4 @@ function pickNextQuestion() {
 
 // start game
 pickNextQuestion();
+//# sourceMappingURL=index.js.map

@@ -4,10 +4,10 @@
   "description": "Lær gangetabellen med et spill",
   "main": "dist/index.js",
   "scripts": {
-    "prepublish": "npm run lint && npm run build && npm run test",
-    "build": "babel src -d dist",
-    "test": "ava --watch dist/*.test.js",
-    "start": "npm test & npm run build -- --watch"
+    "prepublish": "npm run build && npm run test",
+    "build": "babel src -d dist --source-maps",
+    "test": "ava dist/*.test.js",
+    "start": "npm run build -- --watch & npm test -- --watch"
   },
   "repository": {
     "type": "git",

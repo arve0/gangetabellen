@@ -62,3 +62,4 @@ function removeItemFromBins(bins, item) {
 		});
 	});
 }
+//# sourceMappingURL=reducer.js.map

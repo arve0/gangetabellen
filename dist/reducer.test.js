@@ -82,3 +82,4 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 	t.true(state.bins[1].length === 99);
 	t.true(state.bins[2].length === 1);
 });
+//# sourceMappingURL=reducer.test.js.map

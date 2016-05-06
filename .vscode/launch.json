@@ -5,10 +5,10 @@
 			"name": "Launch",
 			"type": "node",
 			"request": "launch",
-			"program": "${workspaceRoot}/dist/index.js",
+			"program": "${workspaceRoot}/src/index.js",
 			"stopOnEntry": false,
 			"args": [],
-			"cwd": "${workspaceRoot}/dist/",
+			"cwd": "${workspaceRoot}/src/",
 			"preLaunchTask": null,
 			"runtimeExecutable": null,
 			"runtimeArgs": [
@@ -17,9 +17,9 @@
 			"env": {
 				"NODE_ENV": "development"
 			},
-			"externalConsole": true,
-			"sourceMaps": false,
-			"outDir": null
+			"externalConsole": false,
+			"sourceMaps": true,
+			"outDir": "${workspaceRoot}/dist"
 		},
 		{
 			"name": "Attach",
