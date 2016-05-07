@@ -13,6 +13,11 @@ const initialState = {
 
 export default function reducer (state = initialState, action = {}) {
 	switch (action.type) {
+		case 'INFO':
+			return { ...state,
+				mode: 'info',
+				info: action.info }
+
 		case 'QUESTION':
 			const bins = removeItemFromBins(state.bins, action.question)
 			return { ...state,
@@ -21,12 +26,7 @@ export default function reducer (state = initialState, action = {}) {
 				input: '',
 				bins }
 
-		case 'INFO':
-			return { ...state,
-				mode: 'info',
-				info: action.info }
-
-		case 'INPUT':
+		case 'QUESTION_INPUT':
 			var numbers = '0 1 2 3 4 5 6 7 8 9'.split(' ')
 			let input = state.input
 			if (action.key && action.key.name === 'backspace') {

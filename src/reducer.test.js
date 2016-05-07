@@ -5,36 +5,37 @@ test('QUESTION', (t) => {
 	let state = reducer()
 	t.true(state.bins[0].length === 100)
 
+	const question = state.bins[0][0]
 	state = reducer(state, {
 		type: 'QUESTION',
-		question: state.bins[0][0]
+		question
 	})
 
-	t.true(state.question.x === 1)
+	t.true(state.question.x === question.x)
 	t.true(state.bins[0].length === 99)
 })
 
-test('INPUT', (t) => {
+test('QUESTION_INPUT', (t) => {
 	let state = reducer()
 	t.true(state.input === '')
 
 	state = reducer(state, {
-		type: 'INPUT',
+		type: 'QUESTION_INPUT',
 		input: '1'
 	})
 
 	t.true(state.input === '1')
 })
 
-test('INPUT backspace', (t) => {
+test('QUESTION_INPUT: backspace', (t) => {
 	let state = reducer()
 
 	state = reducer(state, {
-		type: 'INPUT',
+		type: 'QUESTION_INPUT',
 		input: '1'
 	})
 	state = reducer(state, {
-		type: 'INPUT',
+		type: 'QUESTION_INPUT',
 		input: '1',
 		key: { name: 'backspace' }
 	})
@@ -53,7 +54,7 @@ test('Answers correct to all questions', (t) => {
 			question
 		})
 		question.answer.split('').map(input => {
-			state = reducer(state, {type: 'INPUT', input})
+			state = reducer(state, {type: 'QUESTION_INPUT', input})
 		})
 	})
 
@@ -66,7 +67,7 @@ test('Answers correct to all questions', (t) => {
 		question: state.bins[1][10]
 	})
 	state.question.answer.split('').map(input => {
-		state = reducer(state, {type: 'INPUT', input})
+		state = reducer(state, {type: 'QUESTION_INPUT', input})
 	})
 
 	t.true(state.bins[0].length === 0)

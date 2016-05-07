@@ -1,6 +1,7 @@
 import { createStore } from 'redux'
 import readline from 'readline'
 import reducer from './reducer.js'
+import { questionInput, exit } from './actions.js'
 
 const store = createStore(reducer)
 
@@ -9,38 +10,12 @@ store.subscribe(() => {
 })
 
 // set up console
-const rl = readline.createInterface(process.stdin, process.stdout)
+process.stdin.setRawMode(true)
 readline.emitKeypressEvents(process.stdin)
 
-process.stdin.on('keypress', registerInput(store))
-rl.on('close', () => {
-	const state = store.getState()
-	console.log(`\nGot ${state.bins[1].length} correct ones.`)
-})
-
-function registerInput (store) {
-	return (str, key) => {
-		const { mode } = store.getState()
-		if (mode === 'info') {
-			pickNextQuestion()
-		} else {
-			store.dispatch({ type: 'INPUT', input: str, key })
-			const { input, question } = store.getState()
-			if (input === question.answer) {
-				pickNextQuestion()
-			}
-		}
-	}
-}
-
-function pickNextQuestion () {
-	const { bins } = store.getState()
-	const randomQuestion = Math.floor(bins[0].length * Math.random())
-	store.dispatch({
-		type: 'QUESTION',
-		question: bins[0][randomQuestion]
-	})
-}
+process.stdin.on('keypress', questionInput(store))
+process.stdin.on('keypress', listenForCtrlC)
+process.on('SIGINT', exit(store))
 
 // start game
 store.dispatch({
@@ -62,4 +37,10 @@ function render ({ mode, input, question, info }) {
 		output = info.text
 	}
 	process.stdout.write(output)
+}
+
+function listenForCtrlC (_, key) {
+	if (key.ctrl && key.name === 'c') {
+		process.kill(process.pid, 'SIGINT')
+	}
 }

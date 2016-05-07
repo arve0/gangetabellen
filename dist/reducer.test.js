@@ -14,36 +14,37 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 	var state = (0, _reducer2.default)();
 	t.true(state.bins[0].length === 100);
 
+	var question = state.bins[0][0];
 	state = (0, _reducer2.default)(state, {
 		type: 'QUESTION',
-		question: state.bins[0][0]
+		question: question
 	});
 
-	t.true(state.question.x === 1);
+	t.true(state.question.x === question.x);
 	t.true(state.bins[0].length === 99);
 });
 
-(0, _ava2.default)('INPUT', function (t) {
+(0, _ava2.default)('QUESTION_INPUT', function (t) {
 	var state = (0, _reducer2.default)();
 	t.true(state.input === '');
 
 	state = (0, _reducer2.default)(state, {
-		type: 'INPUT',
+		type: 'QUESTION_INPUT',
 		input: '1'
 	});
 
 	t.true(state.input === '1');
 });
 
-(0, _ava2.default)('INPUT backspace', function (t) {
+(0, _ava2.default)('QUESTION_INPUT: backspace', function (t) {
 	var state = (0, _reducer2.default)();
 
 	state = (0, _reducer2.default)(state, {
-		type: 'INPUT',
+		type: 'QUESTION_INPUT',
 		input: '1'
 	});
 	state = (0, _reducer2.default)(state, {
-		type: 'INPUT',
+		type: 'QUESTION_INPUT',
 		input: '1',
 		key: { name: 'backspace' }
 	});
@@ -62,7 +63,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 			question: question
 		});
 		question.answer.split('').map(function (input) {
-			state = (0, _reducer2.default)(state, { type: 'INPUT', input: input });
+			state = (0, _reducer2.default)(state, { type: 'QUESTION_INPUT', input: input });
 		});
 	});
 
@@ -75,7 +76,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 		question: state.bins[1][10]
 	});
 	state.question.answer.split('').map(function (input) {
-		state = (0, _reducer2.default)(state, { type: 'INPUT', input: input });
+		state = (0, _reducer2.default)(state, { type: 'QUESTION_INPUT', input: input });
 	});
 
 	t.true(state.bins[0].length === 0);

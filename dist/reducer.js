@@ -32,6 +32,11 @@ function reducer() {
 	var action = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
 	switch (action.type) {
+		case 'INFO':
+			return _extends({}, state, {
+				mode: 'info',
+				info: action.info });
+
 		case 'QUESTION':
 			var bins = removeItemFromBins(state.bins, action.question);
 			return _extends({}, state, {
@@ -40,12 +45,7 @@ function reducer() {
 				input: '',
 				bins: bins });
 
-		case 'INFO':
-			return _extends({}, state, {
-				mode: 'info',
-				info: action.info });
-
-		case 'INPUT':
+		case 'QUESTION_INPUT':
 			var numbers = '0 1 2 3 4 5 6 7 8 9'.split(' ');
 			var input = state.input;
 			if (action.key && action.key.name === 'backspace') {
