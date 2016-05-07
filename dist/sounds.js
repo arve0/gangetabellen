@@ -11,11 +11,11 @@ var _path = require('path');
 var _child_process = require('child_process');
 
 function correct() {
-	play('correct.wav');
+	play('correct.mp3');
 }
 
 function wrong() {
-	play('wrong.wav');
+	play('wrong.mp3');
 }
 
 function play(filename) {
