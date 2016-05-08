@@ -3,13 +3,8 @@
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.between = between;
-function between(a, b, prop) {
-	return function (item) {
-		if (prop) {
-			item = item[prop];
-		}
-		return item > a && item < b;
-	};
+exports.getTestQuestions = getTestQuestions;
+function getTestQuestions(q) {
+	return q.x > 1 && q.y > 1 && q.answer < 30;
 }
 //# sourceMappingURL=filters.js.map

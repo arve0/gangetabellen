@@ -4,10 +4,9 @@ const initialState = {
 	// five bins with questions
 	bins: [generateQuestions(), [], [], [], []],
 	question: {},
-	info: {
-		text: '',
-		action: 'keypress'
-	},
+	info: { text: '' },
+	test: {},
+	mode: '',
 	input: ''
 }
 
@@ -18,10 +17,18 @@ export default function reducer (state = initialState, action = {}) {
 				mode: 'info',
 				info: action.info }
 
+		case 'MODE':
+			return { ...state,
+				mode: action.mode }
+
+		case 'TEST':
+			return { ...state,
+				mode: 'test',
+				test: action.test }
+
 		case 'QUESTION':
 			const bins = removeItemFromBins(state.bins, action.question)
 			return { ...state,
-				mode: 'question',
 				question: action.question,
 				input: '',
 				bins }
@@ -36,6 +43,7 @@ export default function reducer (state = initialState, action = {}) {
 				// if correct, inc counter and add back to bin
 				if (input === state.question.answer) {
 					const correctAnswers = state.question.correctAnswers + 1
+					// TODO: do not mutate state argument
 					state.question = { ...state.question, correctAnswers }
 					// add back to one of the bins
 					state.bins = state.bins.map((bin, i) => {

@@ -10,7 +10,7 @@ var _reducer = require('./reducer.js');
 
 var _reducer2 = _interopRequireDefault(_reducer);
 
-var _actions = require('./actions.js');
+var _inputHandlers = require('./inputHandlers.js');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -21,18 +21,21 @@ store.subscribe(function () {
 });
 
 // set up console
-process.stdin.setRawMode(true);
+if (process.stdin.isTTY) {
+	// not TTY if spawn from another node process
+	process.stdin.setRawMode(true);
+}
 _readline2.default.emitKeypressEvents(process.stdin);
 
-process.stdin.on('keypress', (0, _actions.questionInput)(store));
-process.stdin.on('keypress', listenForCtrlC);
-process.on('SIGINT', (0, _actions.exit)(store));
+process.stdin.on('keypress', (0, _inputHandlers.inputHandler)(store));
+process.stdin.on('keypress', _inputHandlers.listenForCtrlC);
+process.on('SIGINT', exit(store));
 
 // start game
 store.dispatch({
 	type: 'INFO',
 	info: {
-		text: 'Velkommen. Før vi starter, skal vi ta en test for å se hvor rask du er. Trykk på en knapp for å fortsette.'
+		text: 'Velkommen!\nFør vi starter, skal vi ta en test for å se hvor rask du er.\nTrykk på en knapp for å fortsette.'
 	}
 });
 
@@ -41,23 +44,32 @@ function render(_ref) {
 	var input = _ref.input;
 	var question = _ref.question;
 	var info = _ref.info;
+	var test = _ref.test;
 
 	_readline2.default.clearLine(process.stdout, 0);
 	_readline2.default.cursorTo(process.stdout, 0);
 	// console.log(store.getState())
 	var output = void 0;
-	if (mode === 'question') {
-		var correct = input === question.answer ? ' ✓\n' : '';
-		output = question.text + input + correct;
-	} else {
-		output = info.text;
+	switch (mode) {
+		case 'info':
+			output = info.text;
+			break;
+		case 'test': // same as question
+		case 'question':
+			var correct = input === question.answer ? ' ✓\n' : '';
+			output = question.text + input + correct;
+			break;
+		default:
+			output = '';
 	}
 	process.stdout.write(output);
 }
 
-function listenForCtrlC(_, key) {
-	if (key.ctrl && key.name === 'c') {
-		process.kill(process.pid, 'SIGINT');
-	}
+function exit(store) {
+	return function () {
+		var l = store.getState().bins[1].length;
+		console.log('\nGot ' + l + ' correct' + (l > 1 ? ' ones' : '') + '.');
+		process.exit();
+	};
 }
 //# sourceMappingURL=index.js.map

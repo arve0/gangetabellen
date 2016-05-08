@@ -1,11 +1,9 @@
-import { between } from './filters.js'
-import generateQuestions from './generateQuestions.js'
 import test from 'ava'
+import generateQuestions from './generateQuestions.js'
+import { getTestQuestions } from './filters.js'
 
-test('between', (t) => {
-	const questions = generateQuestions()
-	const filtered = questions.filter(between(10, 30, 'answer'))
-
-	t.true(filtered.length === 30)
+test('picks test questions', (t) => {
+	let questions = generateQuestions()
+	questions = questions.filter(getTestQuestions)
+	t.true(questions.length === 38)
 })
-

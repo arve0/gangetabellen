@@ -20,10 +20,9 @@ var initialState = {
 	// five bins with questions
 	bins: [(0, _generateQuestions2.default)(), [], [], [], []],
 	question: {},
-	info: {
-		text: '',
-		action: 'keypress'
-	},
+	info: { text: '' },
+	test: {},
+	mode: '',
 	input: ''
 };
 
@@ -37,10 +36,18 @@ function reducer() {
 				mode: 'info',
 				info: action.info });
 
+		case 'MODE':
+			return _extends({}, state, {
+				mode: action.mode });
+
+		case 'TEST':
+			return _extends({}, state, {
+				mode: 'test',
+				test: action.test });
+
 		case 'QUESTION':
 			var bins = removeItemFromBins(state.bins, action.question);
 			return _extends({}, state, {
-				mode: 'question',
 				question: action.question,
 				input: '',
 				bins: bins });
@@ -56,6 +63,7 @@ function reducer() {
 				if (input === state.question.answer) {
 					(function () {
 						var correctAnswers = state.question.correctAnswers + 1;
+						// TODO: do not mutate state argument
 						state.question = _extends({}, state.question, { correctAnswers: correctAnswers });
 						// add back to one of the bins
 						state.bins = state.bins.map(function (bin, i) {
