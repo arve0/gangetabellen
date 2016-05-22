@@ -12,17 +12,18 @@ var _generateQuestions = require('./generateQuestions.js');
 
 var _generateQuestions2 = _interopRequireDefault(_generateQuestions);
 
+var _actions = require('./actions.js');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var initialState = {
-	// five bins with questions
-	bins: [(0, _generateQuestions2.default)(), [], [], [], []],
-	question: {},
-	info: { text: '' },
-	test: {},
 	mode: '',
+	info: { text: '' },
+	test: { questions: [], answered: [], timeGoal: 0 },
+	questions: (0, _generateQuestions2.default)(),
+	currentQuestion: 0,
 	input: ''
 };
 
@@ -31,49 +32,69 @@ function reducer() {
 	var action = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
 	switch (action.type) {
-		case 'INFO':
+		case _actions.INFO:
 			return _extends({}, state, {
 				mode: 'info',
 				info: action.info });
 
-		case 'MODE':
-			return _extends({}, state, {
-				mode: action.mode });
-
-		case 'TEST':
+		case _actions.TEST_START:
 			return _extends({}, state, {
 				mode: 'test',
-				test: action.test });
+				test: _extends({}, state.test, {
+					// TODO: move Date.now() to action
+					questions: action.questions.map(function (q, i) {
+						return i === 0 ? _extends({}, q, { startTime: Date.now() }) : q;
+					})
+				})
+			});
 
-		case 'QUESTION':
-			var bins = removeItemFromBins(state.bins, action.question);
+		case _actions.TEST_CORRECT_ANSWER:
+			var questions = state.test.questions.map(function (q, i) {
+				if (i === 1) {
+					// TODO: move Date.now() to action
+					return _extends({}, q, { startTime: Date.now() });
+				}
+				return q;
+			});
 			return _extends({}, state, {
-				question: action.question,
 				input: '',
-				bins: bins });
+				test: {
+					answered: [].concat(_toConsumableArray(state.test.answered), [getAnsweredQuestion(state.test.questions)]),
+					questions: questions.slice(1)
+				}
+			});
 
-		case 'QUESTION_INPUT':
+		case _actions.TEST_DONE:
+			// in seconds, example 3.5
+			var time = median(state.test.answered.map(function (q) {
+				return q.time;
+			}));
+			return _extends({}, state, {
+				mode: 'info',
+				timeGoal: time,
+				info: {
+					text: action.text.replace(/__time__/g, (time / 1000).toFixed(1)),
+					nextState: 'round'
+				}
+			});
+
+		case _actions.ROUND_START:
+			return _extends({}, state, {
+				mode: 'round'
+			});
+
+		case _actions.SET_QUESTION:
+			return _extends({}, state, {
+				currentQuestion: action.question,
+				input: '' });
+
+		case _actions.QUESTION_INPUT:
 			var numbers = '0 1 2 3 4 5 6 7 8 9'.split(' ');
 			var input = state.input;
 			if (action.key && action.key.name === 'backspace') {
 				input = state.input.slice(0, state.input.length - 1);
 			} else if (numbers.indexOf(action.input) !== -1) {
 				input = state.input + action.input;
-				// if correct, inc counter and add back to bin
-				if (input === state.question.answer) {
-					(function () {
-						var correctAnswers = state.question.correctAnswers + 1;
-						// TODO: do not mutate state argument
-						state.question = _extends({}, state.question, { correctAnswers: correctAnswers });
-						// add back to one of the bins
-						state.bins = state.bins.map(function (bin, i) {
-							if (i === correctAnswers) {
-								return [].concat(_toConsumableArray(bin), [state.question]);
-							}
-							return bin;
-						});
-					})();
-				}
 			}
 			return _extends({}, state, { input: input });
 		default:
@@ -81,11 +102,20 @@ function reducer() {
 	}
 }
 
-function removeItemFromBins(bins, item) {
-	return bins.map(function (innerArr) {
-		return innerArr.filter(function (i) {
-			return i !== item;
-		});
-	});
+function getAnsweredQuestion(questions) {
+	var answered = _extends({}, questions[0]); // copy
+	// TODO: move Date.now() to action
+	answered.time = Math.abs(Date.now() - answered.startTime); // absolute, in case of jump in time
+	delete answered.startTime;
+	return answered;
+}
+
+function median() {
+	var numbers = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
+
+	var n = [].concat(_toConsumableArray(numbers)).sort();
+	var middle = Math.floor(n.length / 2);
+	// odd -> return middle, even -> return average of middle
+	return middle !== n.length / 2 ? n[middle] : (n[middle - 1] + n[middle]) / 2;
 }
 //# sourceMappingURL=reducer.js.map

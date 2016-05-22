@@ -12,6 +12,8 @@ var _reducer2 = _interopRequireDefault(_reducer);
 
 var _inputHandlers = require('./inputHandlers.js');
 
+var _actions = require('./actions.js');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var store = (0, _redux.createStore)(_reducer2.default);
@@ -28,16 +30,13 @@ if (process.stdin.isTTY) {
 _readline2.default.emitKeypressEvents(process.stdin);
 
 process.stdin.on('keypress', (0, _inputHandlers.inputHandler)(store));
-process.stdin.on('keypress', _inputHandlers.listenForCtrlC);
 process.on('SIGINT', exit(store));
 
 // start game
-store.dispatch({
-	type: 'INFO',
-	info: {
-		text: 'Velkommen!\nFør vi starter, skal vi ta en test for å se hvor rask du er.\nTrykk på en knapp for å fortsette.'
-	}
-});
+store.dispatch((0, _actions.setInfo)({
+	text: 'Velkommen!\nFør vi starter, skal vi ta en test for å se hvor rask du er.\nTrykk på en knapp for å fortsette.',
+	nextState: 'test'
+}));
 
 function render(_ref) {
 	var mode = _ref.mode;
@@ -50,25 +49,27 @@ function render(_ref) {
 	_readline2.default.cursorTo(process.stdout, 0);
 	// console.log(store.getState())
 	var output = void 0;
-	switch (mode) {
-		case 'info':
-			output = info.text;
-			break;
-		case 'test': // same as question
-		case 'question':
-			var correct = input === question.answer ? ' ✓\n' : '';
-			output = question.text + input + correct;
-			break;
-		default:
-			output = '';
+	if (mode === 'info') {
+		output = info.text;
+	} else if (mode === 'test' && test.questions[0]) {
+		var q = test.questions[0];
+		var correct = input === q.answer ? ' ✓\n' : '';
+		output = q.text + input + correct;
+	} else if (mode === 'question') {
+		var _correct = input === question.answer ? ' ✓\n' : '';
+		output = question.text + input + _correct;
+	} else {
+		output = '';
 	}
 	process.stdout.write(output);
 }
 
 function exit(store) {
 	return function () {
-		var l = store.getState().bins[1].length;
-		console.log('\nGot ' + l + ' correct' + (l > 1 ? ' ones' : '') + '.');
+		var c = store.getState().questions.reduce(function (sum, q) {
+			return q.correctAnswers;
+		}, 0);
+		console.log('\nGot ' + c + ' correct' + (c > 1 ? ' ones' : '') + '.');
 		process.exit();
 	};
 }

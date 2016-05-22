@@ -16,6 +16,7 @@ test.before(function (t) {
 	child.stdout.setEncoding('utf8');
 	child.stdout.on('data', function (d) {
 		stdout.push(d);
+		console.log(d);
 	});
 
 	child.stderr.on('data', function (d) {
@@ -34,22 +35,12 @@ test.after(function (t) {
 });
 
 /**
- * plan:
- * 1. keep history of data
- * 2. test length of data array
- * 3. test contents of data array
- * 4. send response
- * 5. expect new data in array
- * 6. continue
- */
-
-/**
  * These tests will run serially.
  * You can run them concurrently by using `test((t) => { ... })`.
  */
 test.serial('gets a welcome message', function () {
 	var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(t) {
-		var _context, stdout, output;
+		var _context, stdout;
 
 		return regeneratorRuntime.wrap(function _callee$(_context2) {
 			while (1) {
@@ -57,16 +48,9 @@ test.serial('gets a welcome message', function () {
 					case 0:
 						_context = context;
 						stdout = _context.stdout;
-						_context2.next = 4;
-						return waitFor(stdout);
+						return _context2.abrupt('return', waitFor('Velkommen', stdout));
 
-					case 4:
-						output = _context2.sent;
-
-						// console.log(output)
-						t.regex(output, 'Velkommen', 'Did not get welcome message.');
-
-					case 6:
+					case 3:
 					case 'end':
 						return _context2.stop();
 				}
@@ -95,7 +79,7 @@ test.serial('gets a question after the welcome message', function () {
 						child.stdin.write('n');
 						// expected: num x num =
 						_context4.next = 6;
-						return waitFor(stdout);
+						return waitFor('x', stdout);
 
 					case 6:
 						output = _context4.sent;
@@ -117,7 +101,7 @@ test.serial('gets a question after the welcome message', function () {
 	};
 }());
 
-test.serial('if correct answer, gets a new question', function () {
+test.serial('test: if correct answer, gets a new question', function () {
 	var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(t) {
 		var _context5, stdout, child, firstQuestion, answer, nextQuestion;
 
@@ -137,7 +121,7 @@ test.serial('if correct answer, gets a new question', function () {
 
 						// get next question
 						_context6.next = 8;
-						return waitFor(stdout);
+						return waitFor('x', stdout);
 
 					case 8:
 						nextQuestion = _context6.sent;
@@ -161,9 +145,9 @@ test.serial('if correct answer, gets a new question', function () {
 	};
 }());
 
-test.serial('initially get no more than ten questions', function () {
+test.serial('test: gets median time after ten questions', function () {
 	var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee4(t) {
-		var _context7, stdout, child, i, answer;
+		var _context7, stdout, child, output, i, answer;
 
 		return regeneratorRuntime.wrap(function _callee4$(_context8) {
 			while (1) {
@@ -172,40 +156,33 @@ test.serial('initially get no more than ten questions', function () {
 						_context7 = context;
 						stdout = _context7.stdout;
 						child = _context7.child;
+						output = void 0;
 						// answer nine questions
 
 						i = 0;
 
-					case 4:
+					case 5:
 						if (!(i < 9)) {
-							_context8.next = 13;
+							_context8.next = 14;
 							break;
 						}
 
-						_context8.next = 7;
-						return waitFor(stdout);
-
-					case 7:
-						output = _context8.sent;
+						output = last(stdout);
 						answer = getAnswer(output);
 
 						child.stdin.write(answer);
+						_context8.next = 11;
+						return sleep(100);
 
-					case 10:
+					case 11:
 						++i;
-						_context8.next = 4;
+						_context8.next = 5;
 						break;
 
-					case 13:
-						_context8.next = 15;
-						return waitFor(stdout);
-
-					case 15:
-						output = _context8.sent;
-
-						t.notThrows(function () {
-							return matchQuestion(output);
-						});
+					case 14:
+						output = last(stdout);
+						t.regex(output, /regnestykkene innen 0.1 sekunder/);
+						child.stdin.write('k'); // press a key to continue
 
 					case 17:
 					case 'end':
@@ -220,19 +197,89 @@ test.serial('initially get no more than ten questions', function () {
 	};
 }());
 
+test.serial('game: played in rounds of 10 questions', function () {
+	var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee5(t) {
+		var _context9, stdout, child, output, i, answer;
+
+		return regeneratorRuntime.wrap(function _callee5$(_context10) {
+			while (1) {
+				switch (_context10.prev = _context10.next) {
+					case 0:
+						_context9 = context;
+						stdout = _context9.stdout;
+						child = _context9.child;
+						output = void 0;
+						// answer ten questions
+
+						i = 0;
+
+					case 5:
+						if (!(i < 10)) {
+							_context10.next = 14;
+							break;
+						}
+
+						output = last(stdout);
+						answer = getAnswer(output);
+
+						child.stdin.write(answer);
+						_context10.next = 11;
+						return sleep(101);
+
+					case 11:
+						++i;
+						_context10.next = 5;
+						break;
+
+					case 14:
+						output = last(stdout);
+						//	t.regex(output, /Din mediantid er [0-9\.]+ sekunder/)
+
+					case 15:
+					case 'end':
+						return _context10.stop();
+				}
+			}
+		}, _callee5, undefined);
+	}));
+
+	return function (_x5) {
+		return ref.apply(this, arguments);
+	};
+}());
+
 /**
  * Helper functions.
  */
-function waitFor(what, timeout) {
-	timeout = timeout || 1000;
-	var initial = what.length;
+function waitFor() {
+	var what = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
+	var where = arguments.length <= 1 || arguments[1] === undefined ? [] : arguments[1];
+	var onlyNew = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
+	var timeout = arguments.length <= 3 || arguments[3] === undefined ? 1000 : arguments[3];
+
 	return new Promise(function (resolve, reject) {
-		var interval = setInterval(function () {
-			if (initial !== what.length) {
-				resolve(last(what));
+		var t = void 0,
+		    i = void 0,
+		    l = void 0;
+		// check every 10 ms
+		if (onlyNew) {
+			l = what.length;
+		}
+		i = setInterval(function () {
+			if (onlyNew && what.length === l) {
+				return;
 			}
-		}, 10); // check every 10 ms
-		setTimeout(reject, timeout);
+			if (last(where) && last(where).indexOf(what) !== -1) {
+				clearTimeout(t);
+				clearInterval(i);
+				resolve(last(where));
+			}
+		}, 10);
+		// or time out
+		t = setTimeout(function () {
+			clearInterval(i);
+			reject('timed out after ' + timeout + ' milliseconds, did not find "' + what + '" in "' + last(where) + '"');
+		}, timeout);
 	});
 }
 
@@ -252,5 +299,13 @@ function matchQuestion(q) {
 function getAnswer(q) {
 	var m = matchQuestion(q);
 	return '' + m[1] * m[2];
+}
+
+function sleep() {
+	var time = arguments.length <= 0 || arguments[0] === undefined ? 1 : arguments[0];
+
+	return new Promise(function (resolve) {
+		setTimeout(resolve, time);
+	});
 }
 //# sourceMappingURL=index.test.js.map

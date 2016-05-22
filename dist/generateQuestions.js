@@ -7,9 +7,14 @@ exports.default = generateQuestions;
 /**
  * Generate an array of questions.
  *
- * [{x: 1, y: 2, text: '1 x 2', answer: '2', correctAnswers: 0}, ...]
+ * [{ x: 3
+ *    y: 2,
+ *    text: `2 x 3 = `,
+ *    answer: '6',
+ *    correctAnswers: 0,
+ *    wrongAnswers: 0
+ *  }, ...]
  */
-
 function generateQuestions() {
 	var arr = [];
 	for (var x = 1; x <= 10; ++x) {
@@ -19,7 +24,8 @@ function generateQuestions() {
 				y: y,
 				text: x + ' x ' + y + ' = ',
 				answer: '' + x * y, // as string
-				correctAnswers: 0
+				correctAnswers: 0,
+				wrongAnswers: 0
 			});
 		}
 	}
