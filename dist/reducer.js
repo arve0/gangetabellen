@@ -21,7 +21,8 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 var initialState = {
 	mode: '',
 	info: { text: '' },
-	test: { questions: [], answered: [], timeGoal: 0 },
+	test: { questions: [], answered: [] },
+	timeGoal: 0,
 	questions: (0, _generateQuestions2.default)(),
 	currentQuestion: 0,
 	input: ''
